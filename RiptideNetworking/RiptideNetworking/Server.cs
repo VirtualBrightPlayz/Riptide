@@ -162,10 +162,17 @@ namespace RiptideNetworking
         {
             MessageReceived?.Invoke(this, e);
 
-            if (messageHandlers.TryGetValue(e.MessageId, out MessageHandler messageHandler))
-                messageHandler(e.FromClientId, e.Message);
-            else
-                RiptideLogger.Log(LogType.warning, $"No server-side handler method found for message ID {e.MessageId}!");
+            try
+            {
+                if (messageHandlers.TryGetValue(e.MessageId, out MessageHandler messageHandler))
+                    messageHandler(e.FromClientId, e.Message);
+                else
+                    RiptideLogger.Log(LogType.warning, $"No server-side handler method found for message ID {e.MessageId}!");
+            }
+            catch (Exception exception)
+            {
+                RiptideLogger.Log(LogType.error, exception.ToString());
+            }
         }
 
         /// <summary>Invokes the <see cref="ClientDisconnected"/> event.</summary>
